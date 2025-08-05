@@ -6,7 +6,7 @@ if [[ "${CWD##*/}" != "docker" ]]; then
     exit 1
 fi
 
-# Run both build scripts in parallel in their respective directories
+# Run all build scripts in parallel in their respective directories
 (
     cd magentic-ui-browser-docker && sh build.sh
 ) &
@@ -15,5 +15,9 @@ fi
     cd magentic-ui-python-env && sh build.sh
 ) &
 
+(
+    cd magentic-ui-vscode-docker && sh build.sh
+) &
+
 wait
-echo "Both builds completed."
+echo "All builds completed."
