@@ -53,6 +53,25 @@ RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
 RUN git clone --depth 1 --branch v1.6.0 https://github.com/novnc/noVNC.git /usr/local/novnc \
     && git clone --depth 1 --branch v0.13.0 https://github.com/novnc/websockify /usr/local/novnc/utils/websockify
 
+# Install Google Chrome instead of chromium-browser
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create Chrome wrapper script that always includes required flags
+RUN echo '#!/bin/bash\nexec /usr/bin/google-chrome-stable --no-sandbox --disable-dev-shm-usage --disable-gpu "$@"' > /usr/local/bin/chrome-wrapper \
+    && chmod +x /usr/local/bin/chrome-wrapper \
+    && ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/google-chrome \
+    && ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chrome
+
+# Configure browser alternatives to use the wrapper
+RUN update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/local/bin/chrome-wrapper 10 \
+    && update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser /usr/local/bin/chrome-wrapper 10 \
+    && echo 'export BROWSER=/usr/local/bin/chrome-wrapper' >> /root/.bashrc \
+    && echo 'export CHROME_EXECUTABLE=/usr/local/bin/chrome-wrapper' >> /root/.bashrc
+
 # Set up working directory
 WORKDIR /app
 

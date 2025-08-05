@@ -35,7 +35,10 @@ docker run -d -p 6080:6080 --name magentic-vscode ghcr.io/microsoft/magentic-ui-
 #### With Local Directory Mount
 ```bash
 # Mount your project directory
-docker run -d -p 6080:6080 --name magentic-vscode ghcr.io/microsoft/magentic-ui-vscode:0.0.1
+docker run -d -p 6080:6080 \
+  -v "/path/to/your/project:/workspace" \
+  --name magentic-vscode \
+  ghcr.io/microsoft/magentic-ui-vscode:latest
 ```
 
 #### Windows PowerShell Example
