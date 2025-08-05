@@ -11,7 +11,7 @@
     "develop": "gatsby clean && gatsby develop",
     "dev": "npm run develop",
     "start": "gatsby clean && gatsby develop",
-    "build": "gatsby clean && rm -rf ../src/magentic_ui/backend/web/ui && PREFIX_PATH_VALUE='' gatsby build --prefix-paths && rsync -a --delete public/ ../src/magentic_ui/backend/web/ui/",
+    "build": "gatsby clean && powershell -Command \"Remove-Item -Path '../src/magentic_ui/backend/web/ui' -Recurse -Force -ErrorAction SilentlyContinue\" && npx cross-env PREFIX_PATH_VALUE='' gatsby build --prefix-paths && powershell -Command \"robocopy public ../src/magentic_ui/backend/web/ui /E /PURGE; if ($LASTEXITCODE -le 7) { exit 0 } else { exit $LASTEXITCODE }\"",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit"
